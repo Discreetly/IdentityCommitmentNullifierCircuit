@@ -14,8 +14,8 @@ export class Prover {
 
   /**
    * Generates a full proof.
-   * @param args The parameters for creating the proof.
-   * @returns The full SnarkJS proof.
+   * @param args An object containing the identity and external nullifier.
+   * @returns An object containing the proof and public signals.
    */
   public async generateProof(args: {
     identity: Identity;
@@ -55,7 +55,7 @@ export class Verifier {
 
   /**
    * Verifies a full proof.
-   * @param fullProof The SnarkJS full proof.
+   * @param An object with the proof and public signals.
    * @returns True if the proof is valid, false otherwise.
    * @throws Error if the proof is using different parameters.
    */
@@ -64,14 +64,10 @@ export class Verifier {
       BigInt(snarkProof.publicSignals.externalNullifier),
       BigInt(snarkProof.publicSignals.identityCommitment)
     ]);
-    const expectedNullifierHash2 = poseidon([
-      BigInt(snarkProof.publicSignals.identityCommitment),
-      BigInt(snarkProof.publicSignals.externalNullifier)
-    ]);
     const actualNullifierHash = snarkProof.publicSignals.nullifierHash;
     if (expectedNullifierHash !== BigInt(actualNullifierHash)) {
       throw new Error(
-        `External nullifier does not match: expectedNullifierHash=${expectedNullifierHash}, expectedNullifierHash2=${expectedNullifierHash2},` +
+        `External nullifier does not match: expectedNullifierHash=${expectedNullifierHash}` +
           `actualNullifierHash=${actualNullifierHash}`
       );
     }
