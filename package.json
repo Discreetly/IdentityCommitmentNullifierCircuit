@@ -1,0 +1,10 @@
+{
+    "name": "IDC Nullifier",
+    "private": true,
+    "scripts": {
+        "build": "./scripts/build-circuits.sh"
+    },
+    "dependencies": {
+        "circomlib": "^2.0.5"
+    }
+}
