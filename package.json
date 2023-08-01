@@ -1,5 +1,5 @@
 {
-    "name": "IDC Nullifier",
+    "name": "idcNullifier",
     "license": "MIT",
     "publishConfig": {
         "access": "public"

@@ -1,6 +1,7 @@
 import { groth16 } from 'snarkjs';
-import { PublicSignals, SNARKProof, VerificationKey, Witness } from './types';
+import { SNARKProof, VerificationKey, Witness } from './types';
 import poseidon from 'poseidon-lite';
+import { Identity } from '@semaphore-protocol/identity';
 
 /**
  * Wrapper class for proof generation.
@@ -17,11 +18,12 @@ export class Prover {
    * @returns The full SnarkJS proof.
    */
   public async generateProof(args: {
-    identitySecret: bigint;
+    identity: Identity;
     externalNullifier: bigint;
   }): Promise<SNARKProof> {
+    const identitySecret = poseidon([args.identity.trapdoor, args.identity.nullifier]);
     const witness: Witness = {
-      identitySecret: args.identitySecret,
+      identitySecret: identitySecret,
       externalNullifier: args.externalNullifier
     };
     const { proof, publicSignals } = await groth16.fullProve(
@@ -30,7 +32,8 @@ export class Prover {
       this.finalZkeyPath,
       null
     );
-    console.debug('idc: ' + poseidon([BigInt(args.identitySecret)]));
+    console.debug('idc from semaphore: ' + poseidon([BigInt(identitySecret)]));
+    console.debug('idc from generateProof: ' + poseidon([BigInt(identitySecret)]));
     const snarkProof: SNARKProof = {
       proof,
       publicSignals: {

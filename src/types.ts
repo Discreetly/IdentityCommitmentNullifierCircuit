@@ -1,3 +1,5 @@
+import { Identity } from '@semaphore-protocol/identity';
+
 export type StrBigInt = string | bigint;
 
 /**

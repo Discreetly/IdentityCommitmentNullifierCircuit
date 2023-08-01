@@ -2,6 +2,7 @@ import { Prover, Verifier } from '../src/index';
 import poseidon from 'poseidon-lite';
 import { params } from './configs';
 import { ZqField } from 'ffjavascript';
+import { Identity } from '@semaphore-protocol/identity';
 /*
   This is the "Baby Jubjub" curve described here:
   https://iden3-docs.readthedocs.io/en/latest/_downloads/33717d75ab84e11313cc0d8a090b636f/Baby-Jubjub.pdf
@@ -25,12 +26,15 @@ export function fieldFactory(excludes?: bigint[], trials: number = 100): bigint 
 }
 
 describe('IdentityCommitmet Nullifier', function () {
+  const identity = new Identity();
   const prover = new Prover(params.wasmFilePath, params.finalZkeyPath);
   const verifier = new Verifier(params.verificationKey);
-  const identitySecret = fieldFactory();
-  console.log(`Identity Secret: ${identitySecret}`);
+  console.log(`Identity: ${identity}`);
   const externalNullifier = fieldFactory();
   console.log(`External Nullifier: ${externalNullifier}`);
+
+  const identitySecret = poseidon([identity.trapdoor, identity.nullifier]);
+  console.log(`Identity Secret: ${identitySecret}`);
   const identityCommitment = poseidon([identitySecret]);
   console.log(`Identity Commitment: ${identityCommitment}`);
   const nullifierHash = poseidon([externalNullifier, identityCommitment]);
@@ -39,7 +43,7 @@ describe('IdentityCommitmet Nullifier', function () {
   test('should generate valid proof', async function () {
     const m0 = performance.now();
     const proof = await prover.generateProof({
-      identitySecret,
+      identity,
       externalNullifier
     });
     const m1 = performance.now();
