@@ -29,7 +29,8 @@
         "build-circuit": "./scripts/build-circuits.sh",
         "build": "npm run build-circuit && npm run build-js",
         "build-js": "rollup --config rollup.config.mjs",
-        "test": "jest"
+        "test": "jest",
+        "test-dev": "npm run test -- --silent=false"
     },
     "dependencies": {
         "@semaphore-protocol/identity": "^3.10.1",

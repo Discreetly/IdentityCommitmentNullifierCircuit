@@ -30,14 +30,16 @@ export class Prover {
       this.finalZkeyPath,
       null
     );
+    console.debug('idc: ' + poseidon([BigInt(args.identitySecret)]));
     const snarkProof: SNARKProof = {
       proof,
       publicSignals: {
-        nullifierHash: publicSignals[0],
-        identityCommitment: publicSignals[1],
+        identityCommitment: publicSignals[0],
+        nullifierHash: publicSignals[1],
         externalNullifier: publicSignals[2]
       }
     };
+    console.debug(snarkProof.publicSignals);
     return snarkProof;
   }
 }
@@ -75,8 +77,8 @@ export class Verifier {
     return groth16.verify(
       this.verificationKey,
       [
-        publicSignals.nullifierHash,
         publicSignals.identityCommitment,
+        publicSignals.nullifierHash,
         publicSignals.externalNullifier
       ],
       proof

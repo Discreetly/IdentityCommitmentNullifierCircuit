@@ -4,13 +4,13 @@ Circuit_Type = "idcNullifier"
 [Circuit_Build]
 Circom_Version = "circom compiler 2.1.5"
 GitHub_URL = "https://github.com/Discreetly/IdentityCommitmentNullifierCircuit.git"
-Git_Commit = "436aff9"
-Compilation_Time = 1690866761
+Git_Commit = "12b7317"
+Compilation_Time = 1690900162
 
 [Files]
 Wasm = "circuit.wasm"
 Wasm_SHA256SUM = "410da93349f51f96dfb1bbb2d6578617a3de2494cf46d1ca6c1910a0098c82b8"
 Zkey = "final.zkey"
-Zkey_SHA256SUM = "36bb0fefca20f56a2fb2cd302b976e20575d491353647e314eaa10eba50f1a2a"
+Zkey_SHA256SUM = "8b4a8bba9bf018ad79f340ace002fafd36e1a9aa547beac83f91d1d574156e6c"
 Verification_Key = "verification_key.json"
-Verification_Key_SHA256SUM = "0751b9e342eb093229cbde308a4c04717050e3bd184446860fe586bd0a0b12a4"
+Verification_Key_SHA256SUM = "7bb85488436b5dbf2fdecd2f07e7e9d72075a07b2c556a52177dadcd987d66f2"

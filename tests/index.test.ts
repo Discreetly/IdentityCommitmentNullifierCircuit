@@ -28,9 +28,13 @@ describe('IdentityCommitmet Nullifier', function () {
   const prover = new Prover(params.wasmFilePath, params.finalZkeyPath);
   const verifier = new Verifier(params.verificationKey);
   const identitySecret = fieldFactory();
+  console.log(`Identity Secret: ${identitySecret}`);
   const externalNullifier = fieldFactory();
+  console.log(`External Nullifier: ${externalNullifier}`);
   const identityCommitment = poseidon([identitySecret]);
+  console.log(`Identity Commitment: ${identityCommitment}`);
   const nullifierHash = poseidon([externalNullifier, identityCommitment]);
+  console.log(`Nullifier Hash: ${nullifierHash}`);
 
   test('should generate valid proof', async function () {
     const m0 = performance.now();
