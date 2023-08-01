@@ -1,20 +1,6 @@
 pragma circom 2.0.0;
 
-include "./node_modules/circomlib/circuits/poseidon.circom";
-
-template CalculateSecret() {
-    signal input identityNullifier;
-    signal input identityTrapdoor;
-
-    signal output out;
-
-    component poseidon = Poseidon(2);
-
-    poseidon.inputs[0] <== identityNullifier;
-    poseidon.inputs[1] <== identityTrapdoor;
-
-    out <== poseidon.out;
-}
+include "../../node_modules/circomlib/circuits/poseidon.circom";
 
 template CalculateIdentityCommitment() {
     signal input secret;
@@ -43,24 +29,13 @@ template CalculateNullifierHash() {
 }
 
 template idcNullifier() {
-    signal input identityNullifier;
-    signal input identityTrapdoor;
-
-    signal input signalHash;
+    signal input identitySecret;
     signal input externalNullifier;
-
-    signal output nullifierHash;
     signal output identityCommitment;
-
-    component calculateSecret = CalculateSecret();
-    calculateSecret.identityNullifier <== identityNullifier;
-    calculateSecret.identityTrapdoor <== identityTrapdoor;
-
-    signal secret;
-    secret <== calculateSecret.out;
+    signal output nullifierHash;
 
     component calculateIdentityCommitment = CalculateIdentityCommitment();
-    calculateIdentityCommitment.secret <== secret;
+    calculateIdentityCommitment.secret <== identitySecret;
 
     identityCommitment  <== calculateIdentityCommitment.out;
 
@@ -68,11 +43,7 @@ template idcNullifier() {
     calculateNullifierHash.externalNullifier <== externalNullifier;
     calculateNullifierHash.identityCommitment <== identityCommitment;
 
-    // Dummy square to prevent tampering signalHash.
-    signal signalHashSquared;
-    signalHashSquared <== signalHash * signalHash;
-
     nullifierHash <== calculateNullifierHash.out;
 }
 
-component main {public [signalHash, externalNullifier]} = idcNullifier();
+component main {public [externalNullifier]} = idcNullifier();
