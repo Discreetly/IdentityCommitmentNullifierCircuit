@@ -27,8 +27,8 @@ export function fieldFactory(excludes?: bigint[], trials: number = 100): bigint 
 
 describe('IdentityCommitmet Nullifier', function () {
   const identity = new Identity();
-  const prover = new Prover(params.wasmFilePath, params.finalZkeyPath);
-  const verifier = new Verifier(params.verificationKey);
+  const prover = new Prover();
+  const verifier = new Verifier();
   console.log(`Identity: ${identity}`);
   const externalNullifier = fieldFactory();
   console.log(`External Nullifier: ${externalNullifier}`);

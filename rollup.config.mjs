@@ -7,6 +7,7 @@ import nodePolyfills from 'rollup-plugin-polyfill-node'
 import replace from '@rollup/plugin-replace'
 import { visualizer } from 'rollup-plugin-visualizer'
 import cleaner from 'rollup-plugin-cleaner'
+import copy from 'rollup-plugin-copy'
 import * as fs from 'fs'
 
 
@@ -79,6 +80,11 @@ export default [
       }),
       ...nodePlugins,
       visualizerPlugin,
+      copy({
+        targets: [
+          { src: 'src/zkeyFiles/', dest: 'dist' }
+        ]
+      })
     ],
   },
   // Browser build

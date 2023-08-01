@@ -20,7 +20,7 @@ fi
 circuit_dir="../src/circuits"
 circuit_path=""
 circuit_type=""
-zkeydir="../zkeyFiles"
+zkeydir="../src/zkeyFiles"
 
 circuit_name="idcNullifier"
 

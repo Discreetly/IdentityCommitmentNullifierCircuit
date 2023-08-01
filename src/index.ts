@@ -1,15 +1,20 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { groth16 } from 'snarkjs';
-import { SNARKProof, VerificationKey, Witness } from './types';
+import type { SNARKProof, VerificationKey, Witness } from './types';
 import poseidon from 'poseidon-lite';
 import { Identity } from '@semaphore-protocol/identity';
+import verificationKey from './zkeyFiles/idcNullifier/verification_key.json';
 
+const wasmFilePath = path.join(__dirname, 'zkeyFiles', 'idcNullifier', 'circuit.wasm');
+const finalZkeyPath = path.join(__dirname, 'zkeyFiles', 'idcNullifier', 'final.zkey');
 /**
  * Wrapper class for proof generation.
  */
 export class Prover {
   constructor(
-    readonly wasmFilePath: string | Uint8Array,
-    readonly finalZkeyPath: string | Uint8Array
+    readonly _wasmFilePath: string | Uint8Array = wasmFilePath,
+    readonly _finalZkeyPath: string | Uint8Array = finalZkeyPath
   ) {}
 
   /**
@@ -28,8 +33,8 @@ export class Prover {
     };
     const { proof, publicSignals } = await groth16.fullProve(
       witness,
-      this.wasmFilePath,
-      this.finalZkeyPath,
+      this._wasmFilePath,
+      this._finalZkeyPath,
       null
     );
     console.debug('idc from semaphore: ' + poseidon([BigInt(identitySecret)]));
@@ -51,7 +56,7 @@ export class Prover {
  * Wrapper of circuit verifier.
  */
 export class Verifier {
-  constructor(readonly verificationKey: VerificationKey) {}
+  constructor(readonly vKey: VerificationKey = verificationKey) {}
 
   /**
    * Verifies a full proof.
@@ -74,7 +79,7 @@ export class Verifier {
 
     const { proof, publicSignals } = snarkProof;
     return groth16.verify(
-      this.verificationKey,
+      this.vKey,
       [
         publicSignals.identityCommitment,
         publicSignals.nullifierHash,
