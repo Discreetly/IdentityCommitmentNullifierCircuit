@@ -6,15 +6,13 @@ The purpose of this is to prove that you have the secrets to an identity commitm
 
 ## Circuit
 
-**Private Inputs**
-_(both of these make up a semaphore identity)_
+**Private Input**
+_(semaphore identity secret)_
 
-- identityNullifier
-- identityTrapdoor
+- identitySecret
 
 **Public Inputs**
 
-- signalHash - dummy data to prevent tampering
 - externalNullifier - nullifier to prevent replay attack/double-signaling
 
 **Outputs**
