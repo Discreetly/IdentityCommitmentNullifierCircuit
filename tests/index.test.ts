@@ -30,7 +30,7 @@ describe('IdentityCommitmet Nullifier', function () {
   const prover = new Prover();
   const verifier = new Verifier();
   console.log(`Identity: ${identity}`);
-  const externalNullifier = fieldFactory();
+  const externalNullifier = BigInt(Date.now());
   console.log(`External Nullifier: ${externalNullifier}`);
 
   const identitySecret = poseidon([identity.trapdoor, identity.nullifier]);
