@@ -15,7 +15,7 @@ _(semaphore identity secret)_
 
 **Public Inputs**
 
-- externalNullifier - nullifier to prevent replay attack/double-signaling
+- externalNullifier - public external nullifier, it could be a timestamp, or a new identity commitment
 
 **Outputs**
 
@@ -30,18 +30,39 @@ _(semaphore identity secret)_
 
 ## Usage
 
+### For use with a timestamp to prevent replay attacks
+
 ```ts
 import { Prover, Verifier } from "idcNullifier";
 import { Identity } from "@semaphore-protocol/identity";
 
-const newIdentity = new Identity();
+const identity = new Identity("Seed");
 const timestamp = new Date.now();
 
 const prover = new Prover();
 
 const proof = prover.generateProof({
-  identity: newIdentity,
+  identity: identity,
   externalNullifier: timestamp,
+});
+
+const identityCommitment = proof.publicSignals.identityCommitment;
+const externalNullifier = proof.publicSignals.externalNullifier;
+
+const verifier = new Verifier();
+const isValid = verifier.verifyProof(proof);
+```
+
+### To prove that you know the secrets for some identity commitment and that you want to replace your identity with a new identity commitment.
+```ts
+import { Prover, Verifier } from "idcNullifier";
+import { Identity } from "@semaphore-protocol/identity";
+
+const prover = new Prover();
+
+const proof = prover.generateProof({
+  identity: oldIdentity,
+  externalNullifier: newIdentityCommitment,
 });
 
 const identityCommitment = proof.publicSignals.identityCommitment;
