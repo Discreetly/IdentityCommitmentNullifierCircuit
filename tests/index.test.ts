@@ -1,5 +1,6 @@
 import { Prover, Verifier } from '../src/index';
-import poseidon from 'poseidon-lite';
+import { poseidon1 } from 'poseidon-lite/poseidon1';
+import { poseidon2 } from 'poseidon-lite/poseidon2';
 import { params } from './configs';
 import { ZqField } from 'ffjavascript';
 import { Identity } from '@semaphore-protocol/identity';
@@ -33,11 +34,11 @@ describe('IdentityCommitmet Nullifier', function () {
   const externalNullifier = BigInt(Date.now());
   console.log(`External Nullifier: ${externalNullifier}`);
 
-  const identitySecret = poseidon([identity.trapdoor, identity.nullifier]);
+  const identitySecret = poseidon2([identity.trapdoor, identity.nullifier]);
   console.log(`Identity Secret: ${identitySecret}`);
-  const identityCommitment = poseidon([identitySecret]);
+  const identityCommitment = poseidon1([identitySecret]);
   console.log(`Identity Commitment: ${identityCommitment}`);
-  const nullifierHash = poseidon([externalNullifier, identityCommitment]);
+  const nullifierHash = poseidon2([externalNullifier, identityCommitment]);
   console.log(`Nullifier Hash: ${nullifierHash}`);
 
   test('should generate valid proof', async function () {
