@@ -2,7 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { groth16 } from 'snarkjs';
 import type { SNARKProof, VerificationKey, Witness } from './types';
-import poseidon from 'poseidon-lite';
+import { poseidon1 } from 'poseidon-lite/poseidon1';
+import { poseidon2 } from 'poseidon-lite/poseidon2';
 import { Identity } from '@semaphore-protocol/identity';
 import verificationKey from './zkeyFiles/idcNullifier/verification_key.json';
 
@@ -26,7 +27,7 @@ export class Prover {
     identity: Identity;
     externalNullifier: bigint;
   }): Promise<SNARKProof> {
-    const identitySecret = poseidon([args.identity.trapdoor, args.identity.nullifier]);
+    const identitySecret = poseidon2([args.identity.trapdoor, args.identity.nullifier]);
     const witness: Witness = {
       identitySecret: identitySecret,
       externalNullifier: args.externalNullifier
@@ -37,8 +38,8 @@ export class Prover {
       this._finalZkeyPath,
       null
     );
-    console.debug('idc from semaphore: ' + poseidon([BigInt(identitySecret)]));
-    console.debug('idc from generateProof: ' + poseidon([BigInt(identitySecret)]));
+    console.debug('idc from semaphore: ' + poseidon1([BigInt(identitySecret)]));
+    console.debug('idc from generateProof: ' + poseidon1([BigInt(identitySecret)]));
     const snarkProof: SNARKProof = {
       proof,
       publicSignals: {
@@ -65,7 +66,7 @@ export class Verifier {
    * @throws Error if the proof is using different parameters.
    */
   public async verifyProof(snarkProof: SNARKProof): Promise<boolean> {
-    const expectedNullifierHash = poseidon([
+    const expectedNullifierHash = poseidon2([
       BigInt(snarkProof.publicSignals.externalNullifier),
       BigInt(snarkProof.publicSignals.identityCommitment)
     ]);
