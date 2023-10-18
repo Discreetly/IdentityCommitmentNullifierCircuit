@@ -13,10 +13,15 @@ const finalZkeyPath = path.join(__dirname, 'zkeyFiles', 'idcNullifier', 'final.z
  * Wrapper class for proof generation.
  */
 export class Prover {
+  wasmFile: string | Uint8Array;
+  finalZkey: string | Uint8Array;
   constructor(
-    readonly _wasmFilePath: string | Uint8Array = wasmFilePath,
-    readonly _finalZkeyPath: string | Uint8Array = finalZkeyPath
-  ) {}
+    _wasmFilePath: string | Uint8Array = wasmFilePath,
+    _finalZkeyPath: string | Uint8Array = finalZkeyPath
+  ) {
+    this.wasmFile = _wasmFilePath;
+    this.finalZkey = _finalZkeyPath;
+  }
 
   /**
    * Generates a full proof.
@@ -34,8 +39,8 @@ export class Prover {
     };
     const { proof, publicSignals } = await groth16.fullProve(
       witness,
-      this._wasmFilePath,
-      this._finalZkeyPath,
+      this.wasmFile,
+      this.finalZkey,
       null
     );
     console.debug('idc from semaphore: ' + poseidon1([BigInt(identitySecret)]));
