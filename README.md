@@ -66,7 +66,7 @@ const proof = prover.generateProof({
 });
 
 const identityCommitment = proof.publicSignals.identityCommitment;
-const externalNullifier = proof.publicSignals.externalNullifier;
+const newIdentityCommitment = proof.publicSignals.externalNullifier;
 
 const verifier = new Verifier();
 const isValid = verifier.verifyProof(proof);
