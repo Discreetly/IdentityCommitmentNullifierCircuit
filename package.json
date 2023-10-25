@@ -1,7 +1,7 @@
 {
   "name": "idc-nullifier",
   "license": "MIT",
-  "version": "0.0.4",
+  "version": "0.0.7",
   "publishConfig": {
     "access": "public"
   },
@@ -30,7 +30,7 @@
     "build-circuit": "./scripts/build-circuits.sh",
     "build": "npm run build-circuit && npm run build-js",
     "build-js": "rollup --config rollup.config.mjs",
-    "test": "jest",
+    "test": "jest --silent=false",
     "test-dev": "npm run test -- --silent=false"
   },
   "dependencies": {
@@ -45,6 +45,7 @@
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-replace": "^5.0.2",
     "@types/jest": "^29.2.4",
+    "@types/snarkjs": "^0.7.6",
     "@typescript-eslint/eslint-plugin": "^5.50.0",
     "@typescript-eslint/parser": "^5.51.0",
     "eslint": "^8.33.0",

@@ -1,6 +1,9 @@
-import { Identity } from '@semaphore-protocol/identity';
+import { Groth16Proof, PublicSignals } from 'snarkjs';
 
-export type StrBigInt = string | bigint;
+export interface SNARKProof {
+  proof: Groth16Proof;
+  publicSignals: PublicSignals;
+}
 
 /**
  * Witness that contains all the inputs needed for proof generation.
@@ -13,26 +16,15 @@ export type Witness = {
 /**
  * Public signals that are generated along with the proof
  */
-export type PublicSignals = {
-  nullifierHash: bigint;
-  identityCommitment: bigint;
-  externalNullifier: bigint;
+export type IDCPublicSignals = {
+  nullifierHash: string;
+  identityCommitment: string;
+  externalNullifier: string;
 };
 
-export type SNARKProof = {
-  proof: Proof;
-  publicSignals: PublicSignals;
-};
-
-/**
- * snarkjs proof.
- */
-export type Proof = {
-  pi_a: StrBigInt[];
-  pi_b: StrBigInt[][];
-  pi_c: StrBigInt[];
-  protocol: string;
-  curve: string;
+export type IDCProof = {
+  proof: Groth16Proof;
+  publicSignals: IDCPublicSignals;
 };
 
 /**

@@ -1,7 +1,6 @@
 import { Prover, Verifier } from '../src/index';
 import { poseidon1 } from 'poseidon-lite/poseidon1';
 import { poseidon2 } from 'poseidon-lite/poseidon2';
-import { params } from './configs';
 import { ZqField } from 'ffjavascript';
 import { Identity } from '@semaphore-protocol/identity';
 /*
@@ -30,16 +29,33 @@ describe('IdentityCommitmet Nullifier', function () {
   const identity = new Identity();
   const prover = new Prover();
   const verifier = new Verifier();
-  console.log(`Identity: ${identity}`);
+  const semaphoreIdentitySecret = identity.getSecret();
+  const semaphoreIdentityCommitment = identity.getCommitment();
+  const identityRaw = identity as unknown as {
+    _commitment: string;
+    _secret: string;
+    _nullifier: string;
+    _trapdoor: string;
+  };
+  console.log('Semaphore idc: ', semaphoreIdentityCommitment);
+  console.log('Semaphore idc raw: ', identityRaw._commitment);
+  const semaphoreIdentityCommitmentRaw = identityRaw._commitment;
+  console.log(`Identity:`, identity);
   const externalNullifier = BigInt(Date.now());
-  console.log(`External Nullifier: ${externalNullifier}`);
-
-  const identitySecret = poseidon2([identity.trapdoor, identity.nullifier]);
-  console.log(`Identity Secret: ${identitySecret}`);
+  console.log(`External Nullifier:`, externalNullifier);
+  const identitySecret = poseidon2([identity.nullifier, identity.trapdoor]);
+  console.log(`Identity Secret:`, identitySecret);
   const identityCommitment = poseidon1([identitySecret]);
-  console.log(`Identity Commitment: ${identityCommitment}`);
+  console.log(`Identity Commitment:`, identityCommitment);
+
+  test('should hash identity values correctly', () => {
+    expect(identitySecret).toBe(semaphoreIdentitySecret);
+    expect(identityCommitment).toBe(semaphoreIdentityCommitment);
+    expect(identityCommitment).toBe(semaphoreIdentityCommitmentRaw);
+  });
+
   const nullifierHash = poseidon2([externalNullifier, identityCommitment]);
-  console.log(`Nullifier Hash: ${nullifierHash}`);
+  console.log(`Nullifier Hash:`, nullifierHash);
 
   test('should generate valid proof', async function () {
     const m0 = performance.now();
@@ -47,6 +63,8 @@ describe('IdentityCommitmet Nullifier', function () {
       identity,
       externalNullifier
     });
+    expect(proof.publicSignals.nullifierHash).toBe(nullifierHash.toString());
+    expect(proof.publicSignals.identityCommitment).toBe(identityCommitment.toString());
     const m1 = performance.now();
     const isValid = await verifier.verifyProof(proof);
     const m2 = performance.now();

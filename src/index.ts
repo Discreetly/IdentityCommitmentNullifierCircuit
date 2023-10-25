@@ -1,14 +1,20 @@
-import * as fs from 'fs';
 import * as path from 'path';
 import { groth16 } from 'snarkjs';
-import type { SNARKProof, VerificationKey, Witness } from './types';
+import type { IDCProof, VerificationKey, Witness } from './types';
 import { poseidon1 } from 'poseidon-lite/poseidon1';
 import { poseidon2 } from 'poseidon-lite/poseidon2';
 import { Identity } from '@semaphore-protocol/identity';
 import verificationKey from './zkeyFiles/idcNullifier/verification_key.json';
 
-const wasmFilePath = path.join(__dirname, 'zkeyFiles', 'idcNullifier', 'circuit.wasm');
-const finalZkeyPath = path.join(__dirname, 'zkeyFiles', 'idcNullifier', 'final.zkey');
+let wasmFilePath;
+let finalZkeyPath;
+
+try {
+  wasmFilePath = path.join(__dirname, 'zkeyFiles', 'idcNullifier', 'circuit.wasm');
+  finalZkeyPath = path.join(__dirname, 'zkeyFiles', 'idcNullifier', 'final.zkey');
+} catch (e) {
+  console.warn('Could not find path to wasm and zkey files');
+}
 /**
  * Wrapper class for proof generation.
  */
@@ -31,8 +37,8 @@ export class Prover {
   public async generateProof(args: {
     identity: Identity;
     externalNullifier: bigint;
-  }): Promise<SNARKProof> {
-    const identitySecret = poseidon2([args.identity.trapdoor, args.identity.nullifier]);
+  }): Promise<IDCProof> {
+    const identitySecret = poseidon2([args.identity.nullifier, args.identity.trapdoor]);
     const witness: Witness = {
       identitySecret: identitySecret,
       externalNullifier: args.externalNullifier
@@ -43,9 +49,9 @@ export class Prover {
       this.finalZkey,
       null
     );
-    console.debug('idc from semaphore: ' + poseidon1([BigInt(identitySecret)]));
+    console.debug('idc from semaphore: ' + args.identity.getCommitment());
     console.debug('idc from generateProof: ' + poseidon1([BigInt(identitySecret)]));
-    const snarkProof: SNARKProof = {
+    const snarkProof: IDCProof = {
       proof,
       publicSignals: {
         identityCommitment: publicSignals[0],
@@ -70,12 +76,12 @@ export class Verifier {
    * @returns True if the proof is valid, false otherwise.
    * @throws Error if the proof is using different parameters.
    */
-  public async verifyProof(snarkProof: SNARKProof): Promise<boolean> {
+  public async verifyProof(idcProof: IDCProof): Promise<boolean> {
     const expectedNullifierHash = poseidon2([
-      BigInt(snarkProof.publicSignals.externalNullifier),
-      BigInt(snarkProof.publicSignals.identityCommitment)
+      BigInt(idcProof.publicSignals.externalNullifier),
+      BigInt(idcProof.publicSignals.identityCommitment)
     ]);
-    const actualNullifierHash = snarkProof.publicSignals.nullifierHash;
+    const actualNullifierHash = idcProof.publicSignals.nullifierHash;
     if (expectedNullifierHash !== BigInt(actualNullifierHash)) {
       throw new Error(
         `External nullifier does not match: expectedNullifierHash=${expectedNullifierHash}` +
@@ -83,7 +89,7 @@ export class Verifier {
       );
     }
 
-    const { proof, publicSignals } = snarkProof;
+    const { proof, publicSignals } = idcProof;
     return groth16.verify(
       this.vKey,
       [
@@ -95,3 +101,5 @@ export class Verifier {
     );
   }
 }
+
+export * from './types';
