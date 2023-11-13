@@ -49,8 +49,6 @@ export class Prover {
       this.finalZkey,
       null
     );
-    console.debug('idc from semaphore: ' + args.identity.getCommitment());
-    console.debug('idc from generateProof: ' + poseidon1([BigInt(identitySecret)]));
     const snarkProof: IDCProof = {
       proof,
       publicSignals: {
@@ -59,7 +57,6 @@ export class Prover {
         externalNullifier: publicSignals[2]
       }
     };
-    console.debug(snarkProof.publicSignals);
     return snarkProof;
   }
 }
